@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trivia Educativa</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background:  #f0f8ff;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .question-container {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+    .option {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .option.correct {
+      background-color: #c8f7c5;
+      border-color: #27ae60;
+    }
+    .option.incorrect {
+      background-color: #f7c5c5;
+      border-color: #c0392b;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+    }
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      cursor: not-allowed;
+    }
+    #nextBtn.enabled {
+      cursor: pointer;
+      background-color: #2980b9;
+    }
+    #result {
+      text-align: center;
+      font-size: 1.2em;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="question-container animate__animated animate__fadeIn">
+    <div id="question" class="question"></div>
+    <div id="options"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Siguiente</button>
+  </div>
+  <div id="result"></div>
+
+  <script>
+    const questions = [
+      { q: "¿Cuál es la capital de México?", a: ["Guadalajara", "Monterrey", "Ciudad de México", "Puebla"], correct: 2 },
+      { q: "¿Qué planeta es conocido como el planeta rojo?", a: ["Venus", "Marte", "Júpiter", "Saturno"], correct: 1 },
+      { q: "¿Cuántos continentes hay en el mundo?", a: ["5", "6", "7", "8"], correct: 2 },
+      { q: "¿Quién escribió 'Don Quijote de la Mancha'?", a: ["Gabriel García Márquez", "Miguel de Cervantes", "Pablo Neruda", "Federico García Lorca"], correct: 1 },
+      { q: "¿Cuál es el resultado de 9 x 7?", a: ["56", "63", "72", "64"], correct: 1 },
+      { q: "¿Qué gas respiramos para vivir?", a: ["Dióxido de carbono", "Oxígeno", "Nitrógeno", "Hidrógeno"], correct: 1 },
+      { q: "¿Cuál es el océano más grande?", a: ["Atlántico", "Índico", "Ártico", "Pacífico"], correct: 3 },
+      { q: "¿Qué instrumento mide la temperatura?", a: ["Barómetro", "Termómetro", "Altímetro", "Anemómetro"], correct: 1 },
+      { q: "¿Qué órgano bombea la sangre en el cuerpo humano?", a: ["Cerebro", "Pulmones", "Hígado", "Corazón"], correct: 3 },
+      { q: "¿Qué día se celebra la independencia de México?", a: ["16 de septiembre", "5 de mayo", "20 de noviembre", "1 de enero"], correct: 0 }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById("question").textContent = q.q;
+      const optionsContainer = document.getElementById("options");
+      optionsContainer.innerHTML = "";
+      q.a.forEach((opt, idx) => {
+        const btn = document.createElement("div");
+        btn.className = "option";
+        btn.textContent = opt;
+        btn.onclick = () => selectAnswer(btn, idx);
+        optionsContainer.appendChild(btn);
+      });
+      document.getElementById("nextBtn").classList.remove("enabled");
+      document.getElementById("nextBtn").disabled = true;
+    }
+
+    function selectAnswer(selectedOption, selectedIdx) {
+      const q = questions[currentQuestion];
+      const options = document.querySelectorAll(".option");
+      options.forEach((opt, idx) => {
+        opt.onclick = null;
+        if (idx === q.correct) opt.classList.add("correct");
+        else if (idx === selectedIdx) opt.classList.add("incorrect");
+      });
+      if (selectedIdx === q.correct) score++;
+      const nextBtn = document.getElementById("nextBtn");
+      nextBtn.classList.add("enabled");
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      const container = document.querySelector(".question-container");
+      container.style.display = "none";
+      const result = document.getElementById("result");
+      let feedback = "";
+      if (score === 10) feedback = "¡Excelente! ¡10 de 10! 🎉";
+      else if (score >= 7) feedback = "¡Muy bien! Obtuviste " + score + " de 10.";
+      else if (score >= 4) feedback = "Bien, pero puedes mejorar. Tu puntaje: " + score + ".";
+      else feedback = "¡Ánimo! Sigue estudiando. Obtuviste " + score + " de 10.";
+      result.innerHTML = `<p class="animate__animated animate__fadeIn">${feedback}</p>`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
